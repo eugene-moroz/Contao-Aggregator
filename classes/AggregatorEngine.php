@@ -521,8 +521,9 @@ class AggregatorEngine extends \Backend{
 					}
 					
 				}
-                $cacheLibrary = json_encode($cacheLibrary, JSON_UNESCAPED_UNICODE);
+                $cacheLibrary = json_encode(utf8_encode($cacheLibrary));
                 if (!$cacheLibrary) {
+                    throw new \Exception(json_last_error_msg());
                 } else {
                     $fp = fopen(TL_ROOT.'/system/modules/aggregator/cache/'.$fileId.'.json.cache', 'w');
                     fwrite($fp, $cacheLibrary);
@@ -548,14 +549,14 @@ class AggregatorEngine extends \Backend{
 						$count++;
 					}
 				}
-                $cacheLibrary = json_encode($cacheLibrary, JSON_UNESCAPED_UNICODE);
+                $cacheLibrary = json_encode(utf8_encode($cacheLibrary));
                 if (!$cacheLibrary) {
+                    throw new \Exception(json_last_error_msg());
                 } else {
                     $fp = fopen(TL_ROOT.'/system/modules/aggregator/cache/'.$fileId.'.json.cache', 'w');
                     fwrite($fp, $cacheLibrary);
                     fclose($fp);
                 }
-				
 			break;
 			
 			case 'instagram':
@@ -584,8 +585,9 @@ class AggregatorEngine extends \Backend{
 						$count++;
 					}
 				}
-                $cacheLibrary = json_encode($cacheLibrary, JSON_UNESCAPED_UNICODE);
+                $cacheLibrary = json_encode(utf8_encode($cacheLibrary));
                 if (!$cacheLibrary) {
+                    throw new \Exception(json_last_error_msg());
                 } else {
                     $fp = fopen(TL_ROOT.'/system/modules/aggregator/cache/'.$fileId.'.json.cache', 'w');
                     fwrite($fp, $cacheLibrary);
