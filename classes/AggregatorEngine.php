@@ -521,9 +521,13 @@ class AggregatorEngine extends \Backend{
 					}
 					
 				}
-				$fp = fopen(TL_ROOT.'/system/modules/aggregator/cache/'.$fileId.'.json.cache', 'w');
-				fwrite($fp, json_encode($cacheLibrary));
-				fclose($fp);
+                $cacheLibrary = json_encode($cacheLibrary, JSON_UNESCAPED_UNICODE);
+                if (!$cacheLibrary) {
+                } else {
+                    $fp = fopen(TL_ROOT.'/system/modules/aggregator/cache/'.$fileId.'.json.cache', 'w');
+                    fwrite($fp, $cacheLibrary);
+                    fclose($fp);
+                }
 				
 			break;
 			
@@ -544,9 +548,13 @@ class AggregatorEngine extends \Backend{
 						$count++;
 					}
 				}
-				$fp = fopen(TL_ROOT.'/system/modules/aggregator/cache/'.$fileId.'.json.cache', 'w');
-				fwrite($fp, json_encode($cacheLibrary));
-				fclose($fp);
+                $cacheLibrary = json_encode($cacheLibrary, JSON_UNESCAPED_UNICODE);
+                if (!$cacheLibrary) {
+                } else {
+                    $fp = fopen(TL_ROOT.'/system/modules/aggregator/cache/'.$fileId.'.json.cache', 'w');
+                    fwrite($fp, $cacheLibrary);
+                    fclose($fp);
+                }
 				
 			break;
 			
@@ -576,9 +584,13 @@ class AggregatorEngine extends \Backend{
 						$count++;
 					}
 				}
-				$fp = fopen(TL_ROOT.'/system/modules/aggregator/cache/'.$fileId.'.json.cache', 'w');
-				fwrite($fp, json_encode($cacheLibrary));
-				fclose($fp);
+                $cacheLibrary = json_encode($cacheLibrary, JSON_UNESCAPED_UNICODE);
+                if (!$cacheLibrary) {
+                } else {
+                    $fp = fopen(TL_ROOT.'/system/modules/aggregator/cache/'.$fileId.'.json.cache', 'w');
+                    fwrite($fp, $cacheLibrary);
+                    fclose($fp);
+                }
 			break;
 		}
 		
@@ -586,7 +598,7 @@ class AggregatorEngine extends \Backend{
 	
 	private function checkForBadwords($badwords, $string)
 	{
-			if($bawords[0] != ''){
+			if($badwords[0] != ''){
 				foreach($badwords as $badword)
 				{
 					if(strpos($string, $badword) !== false)
