@@ -71,7 +71,14 @@ $GLOBALS['TL_DCA']['tl_aggregator'] = array(
     			'attributes'          => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
     			'button_callback'     => array('AggregatorEngine', 'toggleIcon')
 			),
-		)
+            'refresh' => array(
+                'label' => &$GLOBALS['TL_LANG']['tl_aggregator']['refresh'],
+                'href' => 'act=refresh',
+                'icon' => 'reload.gif',
+                'button_callback' => array('AggregatorEngine', 'refreshButton')
+            ),
+
+        )
 	),
 	'palettes' => array(
 		'__selector__'  		=> array('type'),
@@ -80,7 +87,7 @@ $GLOBALS['TL_DCA']['tl_aggregator'] = array(
 		'twitterUser'			=> '{title_legend},title,type;{source_legend},twitterUser,cache,badwords,published',
 		'twitterHashtag'		=> '{title_legend},title,type;{source_legend},twitterHashtag,cache,badwords,published',
 		'instagramUser'			=> '{title_legend},title,type;{source_legend},instagramUser,cache,badwords,published',
-		'instagramHashtag'		=> '{title_legend},title,type;{source_legend},instagramHashtag,cache,badwords,published'
+		'instagramHashtag'		=> '{title_legend},title,type;{source_legend},instagramHashtag,cache,badwords,published,posts'
 	),
 	
 	'fields'   => array(
@@ -214,10 +221,28 @@ $GLOBALS['TL_DCA']['tl_aggregator'] = array(
     		'exclude'             => true,
     		'filter'              => true,
     		'inputType'           => 'checkbox',
-			'eval'      => array(
-								'tl_class'    => 'w50 m12',
- 							),
     		'sql'                 => "char(1) NOT NULL default ''"
-		)
+		),
+        'posts' => array(
+            'label'     		=> &$GLOBALS['TL_LANG']['tl_aggregator']['posts'],
+            'inputType' 		=> 'checkbox',
+            'options_callback' 	=> array('AggregatorEngine', 'getAllPosts'),
+            'eval'				=> array(
+                'multiple' 	=> 	true,
+            ),
+            'exclude'           => true,
+            'save_callback'     => array(
+                array('AggregatorEngine', 'afterPostsSave')
+            )
+        )
 	)
 );
+
+if (Input::get('act') == 'refresh') {
+    $this->import('AggregatorEngine');
+    /** @var Aggregator\AggregatorEngine $ctrl */
+    $ctrl = $this->AggregatorEngine;
+
+    $ctrl->checkForUpdates(true);
+    $ctrl->redirect($this->getReferer());
+}

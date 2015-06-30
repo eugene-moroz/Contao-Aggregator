@@ -203,8 +203,54 @@ class AggregatorEngine extends \Backend{
 
 		return $arrForms;
 	}
-	
-	public function toggleIcon($row, $href, $label, $title, $icon, $attributes)
+
+    public function getAllPosts($row)
+    {
+        $id = $this->Input->get('id');
+
+        if(file_exists(TL_ROOT.'/system/modules/aggregator/cache/'.$id.'.json.cache')) {
+            $data = json_decode(
+                file_get_contents(TL_ROOT . '/system/modules/aggregator/cache/' . $id . '.json.cache'),
+                true
+            );
+            $posts = [];
+            foreach($data as $key => $post) {
+                $posts[$key + 1] =
+                    "<a href='#' xmlns=\"http://www.w3.org/1999/html\"><img width='100px' src='{$post['item']['picture']}'></a>";
+            }
+            return $posts;
+        }
+
+
+        return [];
+    }
+
+    public function afterPostsSave($value, $dc)
+    {
+        $id = $dc->activeRecord->id;
+        $postsToLeave = unserialize($value);
+
+        if(file_exists(TL_ROOT.'/system/modules/aggregator/cache/'.$id.'.json.cache')) {
+            $data = json_decode(
+                file_get_contents(TL_ROOT . '/system/modules/aggregator/cache/' . $id . '.json.cache'),
+                true
+            );
+            $posts = [];
+            foreach($data as $key => $post) {
+                if (in_array($key + 1, $postsToLeave)) {
+                    $posts[$key + 1] = $post;
+                }
+            }
+
+            $fp = fopen(TL_ROOT.'/system/modules/aggregator/cache/'.$id.'.json.cache', 'w');
+            fwrite($fp, json_encode($posts));
+            fclose($fp);
+        }
+
+        return null;
+    }
+
+    public function toggleIcon($row, $href, $label, $title, $icon, $attributes)
     {
         $this->import('BackendUser', 'User');
  
@@ -228,8 +274,25 @@ class AggregatorEngine extends \Backend{
  
         return '<a href="'.$this->addToUrl($href).'" title="'.specialchars($title).'"'.$attributes.'>'.$this->generateImage($icon, $label).'</a> ';
     }
-	
-	public function toggleVisibility($intId, $blnPublished)
+
+
+    public function refreshButton($row, $href, $label, $title, $icon, $attributes)
+    {
+        $this->import('BackendUser', 'User');
+
+        if (!$this->User->isAdmin)
+        {
+            return '';
+        }
+
+        $href .= '&amp;id='.$this->Input->get('id').'&amp;tid='.$row['id'];
+
+        return '<a href="'.$this->addToUrl($href).'"'.$attributes.'>'.$this->generateImage($icon, $label).'</a> ';
+    }
+
+
+
+    public function toggleVisibility($intId, $blnPublished)
 	{
 		if (!$this->User->isAdmin && !$this->User->hasAccess('tl_aggregator::published', 'alexf'))
 		{
@@ -252,7 +315,7 @@ class AggregatorEngine extends \Backend{
     	$this->createNewVersion('tl_aggregator', $intId);
 	}
 	
-	public function checkForUpdates()
+	public function checkForUpdates($implicit = false)
 	{
 		global $GLOBALS;
 		$globalBadwordList = explode(',', str_replace(' ', '', $GLOBALS['TL_CONFIG']['aggregator_blacklist']));
@@ -291,7 +354,7 @@ class AggregatorEngine extends \Backend{
 				
 			}
 			
-			if(time() >= $allActiveJobs->lastUpdate+$duration)
+			if((time() >= $allActiveJobs->lastUpdate+$duration) || $implicit)
 			{
 				/* Create temporary Badword List */
 				if($allActiveJobs->badwords != NULL || $allActiveJobs->badwords != '')
