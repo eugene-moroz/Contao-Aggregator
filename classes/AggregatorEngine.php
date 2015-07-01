@@ -521,7 +521,7 @@ class AggregatorEngine extends \Backend{
 					}
 					
 				}
-                $cacheLibrary = json_encode(utf8_encode($cacheLibrary));
+                $cacheLibrary = json_encode($cacheLibrary);
                 if (!$cacheLibrary) {
                     throw new \Exception(json_last_error_msg());
                 } else {
@@ -549,7 +549,7 @@ class AggregatorEngine extends \Backend{
 						$count++;
 					}
 				}
-                $cacheLibrary = json_encode(utf8_encode($cacheLibrary));
+                $cacheLibrary = json_encode($cacheLibrary);
                 if (!$cacheLibrary) {
                     throw new \Exception(json_last_error_msg());
                 } else {
@@ -585,7 +585,7 @@ class AggregatorEngine extends \Backend{
 						$count++;
 					}
 				}
-                $cacheLibrary = json_encode(utf8_encode($cacheLibrary));
+                $cacheLibrary = json_encode($cacheLibrary);
                 if (!$cacheLibrary) {
                     throw new \Exception(json_last_error_msg());
                 } else {
