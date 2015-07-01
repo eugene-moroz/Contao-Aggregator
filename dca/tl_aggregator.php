@@ -83,11 +83,11 @@ $GLOBALS['TL_DCA']['tl_aggregator'] = array(
 	'palettes' => array(
 		'__selector__'  		=> array('type'),
 		'default'       		=> '{title_legend},title,type;',
-		'facebookUser'			=> '{title_legend},title,type;{source_legend},facebookUser,cache,badwords,published',
-		'twitterUser'			=> '{title_legend},title,type;{source_legend},twitterUser,cache,badwords,published',
-		'twitterHashtag'		=> '{title_legend},title,type;{source_legend},twitterHashtag,cache,badwords,published',
-		'instagramUser'			=> '{title_legend},title,type;{source_legend},instagramUser,cache,badwords,published',
-		'instagramHashtag'		=> '{title_legend},title,type;{source_legend},instagramHashtag,cache,badwords,published,posts'
+		'facebookUser'			=> '{title_legend},title,type;{source_legend},facebookUser,cache,badwords,published,posts',
+		'twitterUser'			=> '{title_legend},title,type;{source_legend},twitterUser,cache,badwords,published,numPosts,posts',
+		'twitterHashtag'		=> '{title_legend},title,type;{source_legend},twitterHashtag,cache,badwords,published,numPosts,posts',
+		'instagramUser'			=> '{title_legend},title,type;{source_legend},instagramUser,cache,badwords,published,numPosts,posts',
+		'instagramHashtag'		=> '{title_legend},title,type;{source_legend},instagramHashtag,cache,badwords,published,numPosts,posts'
 	),
 	
 	'fields'   => array(
@@ -221,8 +221,22 @@ $GLOBALS['TL_DCA']['tl_aggregator'] = array(
     		'exclude'             => true,
     		'filter'              => true,
     		'inputType'           => 'checkbox',
+            'eval'      		=> array(
+                'mandatory'   => true,
+                'tl_class'    => 'w50',
+            ),
     		'sql'                 => "char(1) NOT NULL default ''"
 		),
+        'numPosts' => array(
+            'label'     		=> &$GLOBALS['TL_LANG']['tl_aggregator']['numPosts'],
+            'inputType' 		=> 'text',
+            'default'			=> 6,
+            'eval'      		=> array(
+                'mandatory'   => true,
+                'tl_class'    => 'w50',
+            ),
+            'sql'            => "int(10) NOT NULL"
+        ),
         'posts' => array(
             'label'     		=> &$GLOBALS['TL_LANG']['tl_aggregator']['posts'],
             'inputType' 		=> 'checkbox',

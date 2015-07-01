@@ -407,7 +407,7 @@ class AggregatorEngine extends \Backend{
 								);
 								$twitter = new TwitterAPIExchange($settings);
 								$url = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
-								$getfield = '?screen_name='.urlencode($allActiveJobs->twitterUser).'&count=10';
+								$getfield = '?screen_name='.urlencode($allActiveJobs->twitterUser).'&count='.$GLOBALS['TL_DCA']['tl_aggregator']['fields']['numPosts'];
 								$requestMethod = 'GET';
 								$response = $twitter->setGetfield($getfield)->buildOauth($url, $requestMethod)->performRequest();
 								if (isset($response['errors']))
@@ -432,7 +432,7 @@ class AggregatorEngine extends \Backend{
 								);
 								$twitter = new TwitterAPIExchange($settings);
 								$url = 'https://api.twitter.com/1.1/search/tweets.json';
-								$getfield = '?q=%23'.urlencode($allActiveJobs->twitterHashtag).'%20-RT&count=10';
+								$getfield = '?q=%23'.urlencode($allActiveJobs->twitterHashtag).'%20-RT&count='.$GLOBALS['TL_DCA']['tl_aggregator']['fields']['numPosts'];
 								$requestMethod = 'GET';
 								$response = $twitter->setGetfield($getfield)->buildOauth($url, $requestMethod)->performRequest();
 								if (isset($response['errors']))
@@ -449,7 +449,7 @@ class AggregatorEngine extends \Backend{
 					case 'instagramUser':
 						if (isset($GLOBALS['TL_CONFIG']['aggregator_instagram_client_id']) && $GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'] != '' && isset($GLOBALS['TL_CONFIG']['aggregator_instagram_client_secret']) && $GLOBALS['TL_CONFIG']['aggregator_instagram_client_secret'] != '')
 						{
-							$data = $this->fetchUrl('https://api.instagram.com/v1/users/'.urlencode($allActiveJobs->instagramUser).'/media/recent?client_id='.$GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'].'&count=10');
+							$data = $this->fetchUrl('https://api.instagram.com/v1/users/'.urlencode($allActiveJobs->instagramUser).'/media/recent?client_id='.$GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'].'&count='.$GLOBALS['TL_DCA']['tl_aggregator']['fields']['numPosts']);
 							var_dump($data);
 							$this->parseDataToCache($data['data'], $allActiveJobs->id, $currentBadwordList, 'instagram');
 						} else {
@@ -460,7 +460,7 @@ class AggregatorEngine extends \Backend{
 					case 'instagramHashtag':
 						if (isset($GLOBALS['TL_CONFIG']['aggregator_instagram_client_id']) && $GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'] != '' && isset($GLOBALS['TL_CONFIG']['aggregator_instagram_client_secret']) && $GLOBALS['TL_CONFIG']['aggregator_instagram_client_secret'] != '')
 						{
-							$data = $this->fetchUrl('https://api.instagram.com/v1/tags/'.urlencode($allActiveJobs->instagramHashtag).'/media/recent?client_id='.$GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'].'&count=10');
+							$data = $this->fetchUrl('https://api.instagram.com/v1/tags/'.urlencode($allActiveJobs->instagramHashtag).'/media/recent?client_id='.$GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'].'&count='.$GLOBALS['TL_DCA']['tl_aggregator']['fields']['numPosts']);
 							$this->parseDataToCache($data['data'], $allActiveJobs->id, $currentBadwordList, 'instagram');
 						} else {
 							$this->log($GLOBALS['TL_LANG']['ERR']['noInstagramCredentials'], 'tl_aggregator checkForUpdates()',TL_ERROR);
