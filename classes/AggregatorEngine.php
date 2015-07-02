@@ -285,7 +285,7 @@ class AggregatorEngine extends \Backend{
             return '';
         }
 
-        $href .= '&amp;id='.$this->Input->get('id').'&amp;tid='.$row['id'];
+        $href .= '&amp;id='.$this->Input->get('id').'&amp;tid='.$row['id'].'&amp;count='.$row['numPosts'];
 
         return '<a href="'.$this->addToUrl($href).'"'.$attributes.'>'.$this->generateImage($icon, $label).'</a> ';
     }
@@ -450,7 +450,6 @@ class AggregatorEngine extends \Backend{
 						if (isset($GLOBALS['TL_CONFIG']['aggregator_instagram_client_id']) && $GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'] != '' && isset($GLOBALS['TL_CONFIG']['aggregator_instagram_client_secret']) && $GLOBALS['TL_CONFIG']['aggregator_instagram_client_secret'] != '')
 						{
 							$data = $this->fetchUrl('https://api.instagram.com/v1/users/'.urlencode($allActiveJobs->instagramUser).'/media/recent?client_id='.$GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'].'&count='.$GLOBALS['TL_DCA']['tl_aggregator']['fields']['numPosts']);
-							var_dump($data);
 							$this->parseDataToCache($data['data'], $allActiveJobs->id, $currentBadwordList, 'instagram');
 						} else {
 							$this->log($GLOBALS['TL_LANG']['ERR']['noInstagramCredentials'], 'AggregatorEngine checkForUpdates()',TL_ERROR);
@@ -460,8 +459,8 @@ class AggregatorEngine extends \Backend{
 					case 'instagramHashtag':
 						if (isset($GLOBALS['TL_CONFIG']['aggregator_instagram_client_id']) && $GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'] != '' && isset($GLOBALS['TL_CONFIG']['aggregator_instagram_client_secret']) && $GLOBALS['TL_CONFIG']['aggregator_instagram_client_secret'] != '')
 						{
-							$data = $this->fetchUrl('https://api.instagram.com/v1/tags/'.urlencode($allActiveJobs->instagramHashtag).'/media/recent?client_id='.$GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'].'&count='.$GLOBALS['TL_DCA']['tl_aggregator']['fields']['numPosts']);
-							$this->parseDataToCache($data['data'], $allActiveJobs->id, $currentBadwordList, 'instagram');
+                            $data = $this->instantInstagramHashtagFetch($allActiveJobs->instagramHashtag, $implicit);
+                            $this->parseDataToCache($data, $allActiveJobs->id, $currentBadwordList, 'instagram');
 						} else {
 							$this->log($GLOBALS['TL_LANG']['ERR']['noInstagramCredentials'], 'tl_aggregator checkForUpdates()',TL_ERROR);
 						}
@@ -474,6 +473,26 @@ class AggregatorEngine extends \Backend{
 		}
 		
 	}
+
+    private function instantInstagramHashtagFetch($hashtag, $amount)
+    {
+        $count = 0;
+        $amount = (int) $amount;
+        $data = [
+            'data' => [],
+            'pagination' => ['next_url' => false]
+        ];
+        while($count < $amount) {
+            if ($data['pagination']['next_url']) {
+                $remote = $this->fetchUrl($data['pagination']['next_url']);
+            } else {
+                $remote = $this->fetchUrl('https://api.instagram.com/v1/tags/'.urlencode($hashtag).'/media/recent?client_id='.$GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'].'&count=20');
+            }
+            $data['data'] = array_merge($data['data'], $remote['data']);
+            $count += 20;
+        }
+        return $data['data'];
+    }
 	
 	private function parseDataToCache($data, $fileId, $badwords, $type)
 	{

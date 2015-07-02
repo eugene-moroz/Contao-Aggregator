@@ -252,11 +252,11 @@ $GLOBALS['TL_DCA']['tl_aggregator'] = array(
 	)
 );
 
-if (Input::get('act') == 'refresh') {
+if (Input::get('act') == 'refresh' && Input::get('count')) {
     $this->import('AggregatorEngine');
     /** @var Aggregator\AggregatorEngine $ctrl */
     $ctrl = $this->AggregatorEngine;
 
-    $ctrl->checkForUpdates(true);
+    $ctrl->checkForUpdates(Input::get('count'));
     $ctrl->redirect($this->getReferer());
 }
