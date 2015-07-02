@@ -489,8 +489,11 @@ class AggregatorEngine extends \Backend{
                 $remote = $this->fetchUrl('https://api.instagram.com/v1/tags/'.urlencode($hashtag).'/media/recent?client_id='.$GLOBALS['TL_CONFIG']['aggregator_instagram_client_id'].'&count=20');
             }
             $data['data'] = array_merge($data['data'], $remote['data']);
+            $data['pagination'] = $remote['pagination'];
             $count += 20;
         }
+//        var_dump($data);
+//        die;
         return $data['data'];
     }
 	
@@ -604,7 +607,7 @@ class AggregatorEngine extends \Backend{
 						$count++;
 					}
 				}
-                $cacheLibrary = json_encode($cacheLibrary);
+                $cacheLibrary = json_encode(utf8_recursive($cacheLibrary));
                 if (!$cacheLibrary) {
                     throw new \Exception(json_last_error_msg());
                 } else {
@@ -639,4 +642,25 @@ class AggregatorEngine extends \Backend{
 			}
 			return true;
 	}
+}
+
+function utf8_recursive ($array)
+{
+    $result = array();
+    foreach ($array as $key => $value)
+    {
+        if (is_array($value))
+        {
+            $result[$key] = utf8_recursive($value);
+        }
+        else if (is_string($value))
+        {
+            $result[$key] = utf8_encode($value);
+        }
+        else
+        {
+            $result[$key] = $value;
+        }
+    }
+    return $result;
 }
